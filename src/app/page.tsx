@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import isLeapYear from "dayjs/plugin/isLeapYear";
-import Image from "next/image";
 import { useMemo } from "react";
 
 dayjs.extend(isLeapYear);

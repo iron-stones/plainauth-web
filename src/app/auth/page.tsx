@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -52,7 +51,7 @@ const handleAuth = async (
 
   try {
     const token = localStorage.getItem("token");
-    if (!token) {
+    if (!token && typeof window !== "undefined") {
       const currentUrl = encodeURIComponent(window.location.href);
       window.location.href = `/login?redirect=${currentUrl}`;
       return null;
@@ -93,64 +92,69 @@ const handleAuth = async (
 export default function Auth() {
   // http://localhost:4000/auth?redirect_uri=http://localhost:8000/oauth2/callback&client_id=fe217776275400d1&response_type=code&scope=basic&state=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJmZTIxNzc3NjI3NTQwMGQxIiwiZXhwIjoxNzI1OTY5OTcxLjM4NDcwMiwiaWF0IjoxNzI1OTY5OTExLjM4NDcwN30.0BQyfaajroJQY46q1nZtYXXzYJDGJ27lMXESN9qeCH4
 
-  const [searchParams] = useState(new URLSearchParams(window.location.search));
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>();
 
   useEffect(() => {
-    const redirectUri = searchParams.get("redirect_uri");
-    const clientId = searchParams.get("client_id");
-    const responseType = searchParams.get("response_type");
-    const scope = searchParams.get("scope");
-    const state = searchParams.get("state");
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectUri = searchParams.get("redirect_uri");
+      const clientId = searchParams.get("client_id");
+      const responseType = searchParams.get("response_type");
+      const scope = searchParams.get("scope");
+      const state = searchParams.get("state");
 
-    if (!redirectUri) return;
-    if (!clientId) return;
-    if (!responseType) return;
-    if (!scope) return;
-    if (!state) return;
+      if (!redirectUri) return;
+      if (!clientId) return;
+      if (!responseType) return;
+      if (!scope) return;
+      if (!state) return;
 
-    handleAuth({ redirectUri, clientId, responseType, scope, state }).then(
-      (res) => {
-        setAuthInfo(res);
-      }
-    );
+      handleAuth({ redirectUri, clientId, responseType, scope, state }).then(
+        (res) => {
+          setAuthInfo(res);
+        }
+      );
+    }
   }, []);
 
   function clickAuth() {
-    const redirectUri = searchParams.get("redirect_uri");
-    const clientId = searchParams.get("client_id");
-    const responseType = searchParams.get("response_type");
-    const scope = searchParams.get("scope");
-    const state = searchParams.get("state");
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectUri = searchParams.get("redirect_uri");
+      const clientId = searchParams.get("client_id");
+      const responseType = searchParams.get("response_type");
+      const scope = searchParams.get("scope");
+      const state = searchParams.get("state");
 
-    if (!redirectUri) return;
-    if (!clientId) return;
-    if (!responseType) return;
-    if (!scope) return;
-    if (!state) return;
+      if (!redirectUri) return;
+      if (!clientId) return;
+      if (!responseType) return;
+      if (!scope) return;
+      if (!state) return;
 
-    //   {
-    //     "authorize": true,
-    //     "scopes": null,
-    //     "application": {
-    //         "id": 1,
-    //         "client_id": "fe217776275400d1",
-    //         "name": "demo1"
-    //     },
-    //     "user": {
-    //         "open_id": "59d07a64-e1cc-4cbc-a9f3-f9edf308e265",
-    //         "username": "aaamrh"
-    //     },
-    //     "redirect_uri": "http://localhost:8000/oauth2/callback?code=8a2e2d12a70a81bb909ea44ade74e206&state=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJmZTIxNzc3NjI3NTQwMGQxIiwiaXNzIjoicGxhaW5hdXRoLTAuMC4xIiwiZXhwIjoxNzI1OTcwMjM0LCJpYXQiOjE3MjU5Njk5MzR9.6lJquU8hjDYvU84bRWBQcCSUQvC88igSW8s98cynQow",
-    //     "authorize_at": "2024-09-10T20:05:34.228971+08:00"
-    // }
-    handleAuth(
-      { redirectUri, clientId, responseType, scope, state },
-      true
-    ).then((res) => {
-      console.log("click Auth", res);
-      // TODO 授权完成
-    });
+      //   {
+      //     "authorize": true,
+      //     "scopes": null,
+      //     "application": {
+      //         "id": 1,
+      //         "client_id": "fe217776275400d1",
+      //         "name": "demo1"
+      //     },
+      //     "user": {
+      //         "open_id": "59d07a64-e1cc-4cbc-a9f3-f9edf308e265",
+      //         "username": "aaamrh"
+      //     },
+      //     "redirect_uri": "http://localhost:8000/oauth2/callback?code=8a2e2d12a70a81bb909ea44ade74e206&state=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJmZTIxNzc3NjI3NTQwMGQxIiwiaXNzIjoicGxhaW5hdXRoLTAuMC4xIiwiZXhwIjoxNzI1OTcwMjM0LCJpYXQiOjE3MjU5Njk5MzR9.6lJquU8hjDYvU84bRWBQcCSUQvC88igSW8s98cynQow",
+      //     "authorize_at": "2024-09-10T20:05:34.228971+08:00"
+      // }
+      handleAuth(
+        { redirectUri, clientId, responseType, scope, state },
+        true
+      ).then((res) => {
+        console.log("click Auth", res);
+        // TODO 授权完成
+      });
+    }
   }
 
   return (
