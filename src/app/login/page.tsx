@@ -1,8 +1,10 @@
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { hashPassword } from "@/utils/tools";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -11,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   Card,
   CardContent,
@@ -20,9 +21,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
+import { hashPassword } from "@/utils/tools";
+import { ScreenBg } from "@/components/layout/screen-bg";
 import "./index.css";
 
 type Inputs = {
@@ -36,6 +37,8 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const router = useRouter();
+
   const form = useForm<Inputs>({
     resolver: zodResolver(formSchema),
   });
@@ -43,7 +46,6 @@ export default function Login() {
   const onSubmit: SubmitHandler<Inputs> = async (
     data: z.infer<typeof formSchema>
   ) => {
-    console.log("data", data);
     const formData = new URLSearchParams();
     formData.append("username", data.email);
     formData.append("password", await hashPassword(data.password));
@@ -64,13 +66,15 @@ export default function Login() {
       const responseData = await response.json();
       localStorage.setItem("token", responseData.token);
       localStorage.setItem("token_type", responseData.token_type);
+
+      router.push("/auth");
     } catch (error) {
       console.error("Login error:", error);
     }
   };
 
   return (
-    <div className="page-login w-[100vw] h-[100vh] flex">
+    <ScreenBg className="flex">
       <Card className="w-[350px] m-auto">
         <CardHeader className="text-center">
           <CardTitle>AI真香授权中心</CardTitle>
@@ -117,6 +121,6 @@ export default function Login() {
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </ScreenBg>
   );
 }

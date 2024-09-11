@@ -1,0 +1,47 @@
+name: Deploy PlainAuth Webs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies & Build
+        run: |
+          npm i
+          npm run build
+
+      - name: Read Peoject version from package.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub #登陆docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} #docker的用户名
+          password: ${{ secrets.DOCKER_PASSWORD }} #docker的密码
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: yuanmeng/${{ github.repository }}
+
+      - name: ssh docker login
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.YUANMENG_HOST }}
+          username: ${{ secrets.YUANMENG_USER }}
+          password: ${{ secrets.YUANMENG_PASSWORD }}
+          script: cd ~/scripts && sh plainauth-web-deploy.sh ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_PASSWORD }} #运行脚本
+

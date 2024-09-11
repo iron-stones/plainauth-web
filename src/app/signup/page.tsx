@@ -1,8 +1,7 @@
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import "./index.css";
-import { hashPassword } from "../../utils/tools";
+import { hashPassword } from "@/utils/tools";
 
 type Inputs = {
   email: string;
