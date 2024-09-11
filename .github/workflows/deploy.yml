@@ -63,7 +63,7 @@ jobs:
             -d '{
               "msg_type": "text",
               "content": {
-                "text": "monitor page 部署 '"$status"'！\n项目: ${{ github.repository }}\n分支: ${{ github.ref }}\n提交信息: ${{ github.event.head_commit.message }}\n'"$message"'"
+                "text": "部署 '"$status"'！\n项目: ${{ github.repository }}\n分支: ${{ github.ref }}\n提交信息: ${{ github.event.head_commit.message }}\n'"$message"'"
               }
             }' \
             ${{ secrets.FEISHU_DEPLOY_ROBOT_URL }}
