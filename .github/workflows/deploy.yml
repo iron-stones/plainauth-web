@@ -46,3 +46,24 @@ jobs:
           password: ${{ secrets.YUANMENG_PASSWORD }}
           script: cd ~/scripts && sh plainauth-web-deploy.sh ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_PASSWORD }} #运行脚本
 
+      - name: Send Feishu Message
+        if: always()
+        env:
+          DEPLOY_STATUS: ${{ job.status }}
+        run: |
+          if [ "$DEPLOY_STATUS" = "success" ]; then
+            status="✅ 成功"
+            message="部署 URL: ${{ steps.deployment.outputs.page_url }}"
+          else
+            status="❌ 失败"
+            message="请检查 Actions 日志以获取更多信息: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "monitor page 部署 '"$status"'！\n项目: ${{ github.repository }}\n分支: ${{ github.ref }}\n提交信息: ${{ github.event.head_commit.message }}\n'"$message"'"
+              }
+            }' \
+            ${{ secrets.FEISHU_DEPLOY_ROBOT_URL }}
