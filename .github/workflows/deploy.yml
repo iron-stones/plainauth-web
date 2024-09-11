@@ -36,7 +36,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: yuanmeng/${{ github.repository }}
+          tags: aaamrh/plainauth-web
 
       - name: ssh docker login
         uses: appleboy/ssh-action@master
