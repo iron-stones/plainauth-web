@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/card";
 
 import { ScreenBg } from "@/components/layout/screen-bg";
+import { Loading } from "@/components/base/loading";
+import { randomId } from "@juren/helpers";
 
 interface AuthQuery {
   redirectUri: string;
@@ -90,12 +92,14 @@ const handleAuth = async (
 };
 
 export default function Auth() {
-  // http://localhost:4000/auth?redirect_uri=http://localhost:8000/oauth2/callback&client_id=fe217776275400d1&response_type=code&scope=basic&state=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJmZTIxNzc3NjI3NTQwMGQxIiwiZXhwIjoxNzI1OTY5OTcxLjM4NDcwMiwiaWF0IjoxNzI1OTY5OTExLjM4NDcwN30.0BQyfaajroJQY46q1nZtYXXzYJDGJ27lMXESN9qeCH4
+  // http://localhost:4000/auth?redirect_uri=http://localhost:8000/oauth2/callback&client_id=fe217776275400d1&response_type=code&scope=basic&state=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJmZTIxNzc3NjI3NTQwMGQxIiwiZXhwIjoxNzI2MTE3OTU3LjAzMjIwOCwiaWF0IjoxNzI2MTE3ODk3LjAzMjIxN30.kM4r2F4Qxy82ktxZ9aFum0ku1wGXycHlXLLpw0gZWkY
 
   const [authInfo, setAuthInfo] = useState<AuthInfo | null>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      console.log("randomId", randomId);
       const searchParams = new URLSearchParams(window.location.search);
       const redirectUri = searchParams.get("redirect_uri");
       const clientId = searchParams.get("client_id");
@@ -112,6 +116,7 @@ export default function Auth() {
       handleAuth({ redirectUri, clientId, responseType, scope, state }).then(
         (res) => {
           setAuthInfo(res);
+          setLoading(false);
         }
       );
     }
@@ -160,48 +165,56 @@ export default function Auth() {
   return (
     <ScreenBg className="flex">
       <Card className="m-auto min-w-[400px]">
-        <CardHeader className="text-center">
-          <CardTitle>AI真香</CardTitle>
-        </CardHeader>
+        {loading ? (
+          <Loading className="m-auto my-[200px]" />
+        ) : (
+          <>
+            <CardHeader className="text-center">
+              <CardTitle>AI真香</CardTitle>
+            </CardHeader>
 
-        <CardContent className="">
-          <div className="flex items-center justify-center space-x-4">
-            <img className="w-[48px] h-[48px] rounded-full" src="" alt="" />
-            <span>🔗</span>
-            <img className="w-[48px] h-[48px] rounded-full" src="" alt="" />
-          </div>
+            <CardContent className="">
+              <div className="flex items-center justify-center space-x-4">
+                <img className="w-[48px] h-[48px] rounded-full" src="" alt="" />
+                <span>🔗</span>
+                <img className="w-[48px] h-[48px] rounded-full" src="" alt="" />
+              </div>
 
-          <div className="text-center space-y-[8px] mt-[8px]">
-            <p>外部应用程序</p>
-            <p>
-              <b>{authInfo?.application.name}</b>
-            </p>
-            <p>想访问您的 AI真香 账户</p>
-            <p>
-              正在以 {authInfo?.user.username} 身份登录
-              <a className="link" href="">
-                啥？不是本人？
-              </a>
-            </p>
-          </div>
+              <div className="text-center space-y-[8px] mt-[8px]">
+                <p>外部应用程序</p>
+                <p>
+                  <b>{authInfo?.application.name}</b>
+                </p>
+                <p>想访问您的 AI真香 账户</p>
+                <p>
+                  正在以 {authInfo?.user.username} 身份登录
+                  <a className="link" href="">
+                    啥？不是本人？
+                  </a>
+                </p>
+              </div>
 
-          <br />
-          <hr />
-          <br />
+              <br />
+              <hr />
+              <br />
 
-          <div className="space-y-[8px]">
-            <p>这意味着允许 {authInfo?.application.name} 的用户：</p>
-            <p>✅ 访问您的用户名、头像信息</p>
-            <p>✅ 访问您的电子邮箱和手机号</p>
-            <p>❌ 请你吃一顿老北京铜锅涮肉</p>
-          </div>
-        </CardContent>
+              <div className="space-y-[8px]">
+                <p>这意味着允许 {authInfo?.application.name} 的用户：</p>
+                <p>✅ 访问您的用户名、头像信息</p>
+                <p>✅ 访问您的电子邮箱和手机号</p>
+                <p>❌ 请你吃一顿老北京铜锅涮肉</p>
+              </div>
+            </CardContent>
 
-        <CardFooter className="flex justify-between">
-          <Button variant="outline">取消</Button>
-          <Button onClick={() => clickAuth()}>授权</Button>
-        </CardFooter>
+            <CardFooter className="flex justify-between">
+              <Button variant="outline">取消</Button>
+              <Button onClick={() => clickAuth()}>授权</Button>
+            </CardFooter>
+          </>
+        )}
       </Card>
     </ScreenBg>
   );
 }
+
+// TODO 先显示 loading ，成功展示信息，失败一直 loading

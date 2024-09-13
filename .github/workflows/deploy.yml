@@ -1,4 +1,4 @@
-name: Deploy PlainAuth Webs
+name: Deploy PlainAuth Web
 
 on:
   push:
